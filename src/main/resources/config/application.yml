@@ -2,7 +2,7 @@
 # Spring Boot configuration.
 #
 # This configuration will be overriden by the Spring profile you use,
-# for example application-dev.yml if you use the "dev" profile.
+# for example application-local.yml if you use the "dev" profile.
 #
 # More information on profiles: https://www.jhipster.tech/profiles/
 # More information on configuration properties: https://www.jhipster.tech/common-application-properties/
@@ -116,7 +116,7 @@ eureka:
     dashboard:
         path: /registry
     datacenter: JHipster-DataCenter
-    environment: JHipster-Environment
+    environment: ${spring.profiles.active}
 
 jhipster:
     swagger:

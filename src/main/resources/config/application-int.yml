@@ -1,5 +1,5 @@
 # ===================================================================
-# Spring Boot configuration for the "prod" profile.
+# Spring Boot configuration for the "int" profile.
 #
 # This configuration overrides the application.yml file.
 #
@@ -16,19 +16,26 @@
 spring:
     devtools:
         restart:
-            enabled: false
+            enabled: true
         livereload:
-            enabled: false
+            enabled: false # we use gulp + BrowserSync for livereload
+    jackson:
+        serialization.indent_output: true
     mail:
         host: localhost
         port: 25
         username:
         password:
+    messages:
+        cache-duration: 1
+    profiles:
+        active: int
+        include: swagger
     security:
         user:
             name: admin
             password: ${JHIPSTER_REGISTRY_PASSWORD}
-            role: USER,ADMIN
+            roles: USER,ADMIN
 
 # ===================================================================
 # To enable SSL, generate a certificate using:
@@ -40,7 +47,7 @@ spring:
 # Then, modify the server.ssl properties so your "server" configuration looks like:
 #
 # server:
-#    port: 443
+#    port: 8443
 #    ssl:
 #        key-store: keystore.p12
 #        key-store-password: <your-password>
@@ -49,10 +56,6 @@ spring:
 # ===================================================================
 server:
     port: 8761
-    compression:
-        enabled: true
-        mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json
-        min-response-size: 1024
 
 # ===================================================================
 # JHipster specific properties
@@ -63,9 +66,18 @@ server:
 jhipster:
     http:
         version: V_1_1 # To use HTTP/2 you will need SSL support (see above the "server.ssl" configuration)
-        cache: # Used by the CachingHttpHeadersFilter
-            timeToLiveInDays: 1461
+    # CORS is only enabled by default with the "int" profile, so BrowserSync can access the API
+    cors:
+        allowed-origins: "*"
+        allowed-methods: GET, PUT, POST, DELETE, OPTIONS
+        allowed-headers: "*"
+        exposed-headers:
+        allow-credentials: true
+        max-age: 1800
     security:
+        client-authorization:
+          client-id: internal
+          client-secret: internal
         authentication:
             jwt:
                 # The secret key should come from a Spring Cloud Config server, and not from this file
@@ -76,9 +88,9 @@ jhipster:
                 token-validity-in-seconds-for-remember-me: 2592000
     mail: # specific JHipster mail property, for standard properties see MailProperties
         from: JHipsterRegistry@localhost
-        base-url: http://my-server-url-to-change # Modify according to your server's URL
+        base-url: http://127.0.0.1:8761
     metrics:
-        logs: # Reports metrics in the logs
+        logs:  # Reports metrics in the logs
             enabled: false
             report-frequency: 60 # in seconds
     logging:
